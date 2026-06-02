@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Sylix Voice Changer - Termux Build Script
+# Sylix Voice Changer - Termux Build Script (Optimized)
 # This script automates the entire build process for Termux on Android phones
 
 echo "=========================================="
@@ -28,7 +28,7 @@ echo ""
 echo -e "${YELLOW}Step 2: Installing required packages...${NC}"
 echo "This may take a few minutes..."
 
-# Try to install gradle (which includes Java)
+# Install gradle (which includes Java)
 apt install -y gradle
 if [ $? -ne 0 ]; then
     echo -e "${RED}Error: Failed to install gradle${NC}"
@@ -52,14 +52,19 @@ echo ""
 
 # Step 4: Build the APK
 echo -e "${YELLOW}Step 4: Building APK...${NC}"
-echo "This will take 5-10 minutes. Please wait..."
+echo "This will take 10-15 minutes. Please wait..."
+echo "Keep your phone plugged in and don't close Termux."
 echo ""
 
 # Make gradlew executable
 chmod +x ./gradlew
 
-# Run the build
-./gradlew assembleDebug
+# Set Termux-specific environment variables for better compatibility
+export GRADLE_OPTS="-Xmx512m -Xms256m"
+export JAVA_OPTS="-Xmx512m -Xms256m"
+
+# Run the build with Termux-optimized settings
+./gradlew assembleDebug --no-daemon
 
 if [ $? -eq 0 ]; then
     echo ""
@@ -76,6 +81,9 @@ if [ $? -eq 0 ]; then
     echo "3. Grant permissions when prompted"
     echo "4. Launch Sylix Voice Changer!"
     echo ""
+    echo "APK file location:"
+    ls -lh app/build/outputs/apk/debug/app-debug.apk
+    echo ""
 else
     echo ""
     echo -e "${RED}=========================================="
@@ -85,6 +93,11 @@ else
     echo "Troubleshooting:"
     echo "1. Make sure you have at least 1.6GB free storage"
     echo "2. Try running: apt update && apt upgrade -y"
-    echo "3. Then run this script again"
+    echo "3. Close other apps to free up memory"
+    echo "4. Then run this script again"
+    echo ""
+    echo "If it still fails, try manual build:"
+    echo "  chmod +x ./gradlew"
+    echo "  ./gradlew assembleDebug --no-daemon"
     exit 1
 fi
