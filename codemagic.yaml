@@ -15,16 +15,6 @@ workflows:
         script: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
-      - name: List build outputs
-        script: |
-          find . -name "*.apk" -type f
     artifacts:
       - app/build/outputs/apk/debug/app-debug.apk
-    publishing:
-      email:
-        recipients:
-          - $PERSONAL_EMAIL
-        notify:
-          success: true
-          failure: true
-
+      
